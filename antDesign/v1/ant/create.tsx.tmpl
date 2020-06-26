@@ -1,0 +1,25 @@
+// @BeeOverwrite YES
+import React from 'react';
+import { CreateForm } from 'sula';
+import {Card} from 'antd';
+import FormConfig from "./formconfig"
+const apiUrl = "{{apiUrl}}";
+
+export default class Base extends React.Component {
+  render() {
+    const submit =  {
+      "url": apiUrl,
+      "method": "post"
+    };
+
+    return (
+        <Card>
+            <CreateForm
+              {...FormConfig.config}
+              submit = { submit }
+              mode = "create"
+            />
+        </Card>
+    );
+  }
+}

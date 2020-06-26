@@ -1,0 +1,40 @@
+// @BeeOverwrite YES
+export default {
+  config : {
+    "container": {
+    "type": "div",
+      "props": {
+      "style": {
+        "background": "#fff",
+          "padding": "24px",
+          "borderRadius": 2,
+          "margin": "0 auto 72px",
+          "maxWidth": 1000
+      }
+    }
+  },
+    "itemLayout": {
+    "labelCol": {
+      "span": 6
+    },
+    "wrapperCol": {
+      "span": 8
+    }
+  },
+    "fields": [
+    {% for value in modelSchemas %}
+    {
+      "name": "{{value.Name}}",
+      "label": "{{value.Comment}}",
+      "field": {
+        "type": "input",
+        "props": {
+            "placeholder": "请输入{{value.Comment}}"
+        }
+      }
+    },
+    {% endfor %}
+  ],
+    "actionsPosition": "default",
+  }
+}

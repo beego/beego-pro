@@ -1,0 +1,97 @@
+// @BeeOverwrite YES
+import React, {Fragment} from 'react';
+import {Card, Row, Col, Statistic, message, Timeline, Tag, Button, Divider, Modal} from 'antd';
+import { QueryTable } from 'sula';
+import { history } from 'umi';
+import request from "@/utils/request";
+
+const apiUrl = "{{apiUrl}}";
+const pageCreate = "{{pageCreate}}"
+const pageUpdate = "{{pageUpdate}}"
+
+const config = {
+  "layout": "vertical",
+  "rowKey": "aid",
+  "remoteDataSource": {
+    "url": apiUrl,
+    "method": "get"
+  },
+    "actionsRender": [
+      {
+        "type": "button",
+        "props": {
+          "children": "新增",
+          "type": "primary"
+        },
+        "action": {
+          "type": "route",
+          "path": pageCreate
+        }
+      },
+    ],
+}
+
+
+export default class List extends React.Component  {
+  render() {
+    const columns = [
+        {% for value in modelSchemas %}
+        {
+          title: "{{value.Comment}}",
+          key: "{{value.GoJsonTag}}",
+        },
+        {% endfor %}
+        {
+            key:"operator",
+            title: "操作",
+            render: (ctx) => (
+                <Fragment>
+                  <a
+                    onClick={() => {
+                      history.push({
+                        pathname: pageUpdate,
+                        search: `?{{lowerFirstPrimaryKey}}=${ctx.record.{{lowerFirstPrimaryKey}} }`,
+                      });
+                    }}
+                  >
+                    编辑
+                  </a>
+                  <Divider type="vertical" />
+                  <a
+                    onClick={() => {
+                      Modal.confirm({
+                        title: '确认删除？',
+                        okText: '确认',
+                        cancelText: '取消',
+                        onOk: () => {
+                          request(apiUrl+"/"+ctx.record.{{lowerFirstPrimaryKey}}, {
+                            method: 'DELETE',
+                          }).then((res) => {
+                            if (res.code !== 0) {
+                              message.error(res.msg);
+                              return false;
+                            }
+                            ctx.table.refreshTable()
+                            return true;
+                          });
+                        },
+                      });
+                    }}
+                  >
+                    删除
+                  </a>
+                </Fragment>
+              )
+          }
+    ];
+
+    return (
+        <Card>
+          <QueryTable
+            {...config}
+            columns={columns}
+          />
+        </Card>
+    );
+  }
+}

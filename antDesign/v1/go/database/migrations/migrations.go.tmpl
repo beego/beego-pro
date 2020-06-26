@@ -1,0 +1,32 @@
+// @BeeOverwrite YES
+package main
+
+import (
+    "github.com/astaxie/beego/migration"
+)
+
+// DO NOT MODIFY
+type {{StructName}} struct {
+    migration.Migration
+}
+
+// DO NOT MODIFY
+func init() {
+    m := &{{StructName}}{}
+    m.Created = "{{CurrTime}}"
+    {{ddlSpec|safe}}
+    migration.Register("{{StructName}}", m)
+}
+
+
+// Run the migrations
+func (m *{{StructName}}) Up() {
+    // use m.SQL("CREATE TABLE ...") to make schema update
+    {{UpSQL|safe}}
+}
+
+// Reverse the migrations
+func (m *{{StructName}}) Down() {
+    // use m.SQL("DROP TABLE ...") to reverse schema update
+    {{DownSQL|safe}}
+}

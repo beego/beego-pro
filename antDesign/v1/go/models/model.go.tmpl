@@ -1,0 +1,180 @@
+// @BeeOverwrite YES
+package {{packageName}}
+
+import (
+	"errors"
+	"fmt"
+	"reflect"
+	"strings"
+	"github.com/astaxie/beego/orm"
+	{% for value in imports %}"{{value}}"
+    {% endfor %}
+)
+
+type {{name}} struct {
+     {% for value in modelSchemas %}{{value.CamelName}} {{value.GoType}} ` {% if value.OrmTag != "" %}orm:"{{value.OrmTag}}"{% endif %}json:"{{value.GoJsonTag}}" form:"{{value.GoJsonTag}}"` // {{value.Comment}}
+     {% endfor %}
+}
+
+
+func (t *{{name}}) TableName() string {
+	return "{{tableName}}"
+}
+
+func init() {
+	orm.RegisterModel(new({{name}}))
+}
+
+// Add{{name}} insert a new {{name}} into database and returns
+// last inserted Id on success.
+func Add{{name}}(m *{{name}}) (id int64, err error) {
+	o := orm.NewOrm()
+	{% for value in modelSchemas %}
+        {% if value.Name == "created_at" %}
+            m.CreatedAt = time.Now()
+        {% endif %}
+        {% if value.Name == "updated_at" %}
+            m.UpdatedAt = time.Now()
+        {% endif %}
+    {% endfor %}
+	id, err = o.Insert(m)
+	return
+}
+
+// Get{{name}}ById retrieves {{name}} by Id. Returns error if
+// Id doesn't exist
+func Get{{name}}ById(id int) (v *{{name}}, err error) {
+	o := orm.NewOrm()
+	v = &{{name}}{
+	    {{primaryKey}}: id,
+	}
+	if err = o.Read(v); err == nil {
+		return v, nil
+	}
+	return nil, err
+}
+
+// GetAll{{name}} retrieves all {{name}} matches certain condition. Returns empty list if
+// no records exist
+func GetAll{{name}}(query map[string]string, fields []string, sortby []string, order []string,
+	currentPage int, pageSize int) (ml ListData, err error) {
+    page := NewPagination(currentPage, pageSize)
+    ml = ListData{
+        List:make([]interface{},0),
+    }
+	o := orm.NewOrm()
+	qs := o.QueryTable(new({{name}}))
+	// query k=v
+	for k, v := range query {
+		// rewrite dot-notation to Object__Attribute
+		k = strings.Replace(k, ".", "__", -1)
+		if strings.Contains(k, "isnull") {
+			qs = qs.Filter(k, (v == "true" || v == "1"))
+		} else {
+			qs = qs.Filter(k, v)
+		}
+	}
+	// order by:
+	var sortFields []string
+	if len(sortby) != 0 {
+		if len(sortby) == len(order) {
+			// 1) for each sort field, there is an associated order
+			for i, v := range sortby {
+				orderby := ""
+				if order[i] == "desc" {
+					orderby = "-" + v
+				} else if order[i] == "asc" {
+					orderby = v
+				} else {
+				    err = errors.New("Error: Invalid order. Must be either [asc|desc]")
+					return
+				}
+				sortFields = append(sortFields, orderby)
+			}
+			qs = qs.OrderBy(sortFields...)
+		} else if len(sortby) != len(order) && len(order) == 1 {
+			// 2) there is exactly one order, all the sorted fields will be sorted by this order
+			for _, v := range sortby {
+				orderby := ""
+				if order[0] == "desc" {
+					orderby = "-" + v
+				} else if order[0] == "asc" {
+					orderby = v
+				} else {
+				    err = errors.New("Error: Invalid order. Must be either [asc|desc]")
+					return
+				}
+				sortFields = append(sortFields, orderby)
+			}
+		} else if len(sortby) != len(order) && len(order) != 1 {
+		    err = errors.New("Error: 'sortby', 'order' sizes mismatch or 'order' size is not 1")
+			return
+		}
+	} else {
+		if len(order) != 0 {
+		    err = errors.New("Error: unused 'order' fields")
+			return
+		}
+	}
+
+	var l []{{name}}
+    qs = qs.OrderBy(sortFields...)
+    _, err = qs.Limit(page.PageSize, (page.Current - 1) * page.PageSize).All(&l, fields...)
+    if err != nil {
+        return
+    }
+
+    if len(fields) == 0 {
+        for _, v := range l {
+            ml.List = append(ml.List, v)
+        }
+    } else {
+        // trim unused fields
+        for _, v := range l {
+            m := make(map[string]interface{})
+            val := reflect.ValueOf(v)
+            for _, fname := range fields {
+                m[fname] = val.FieldByName(fname).Interface()
+            }
+            ml.List = append(ml.List, m)
+        }
+    }
+    ml.Pagination = *page
+	return
+}
+
+// Update{{name}} updates {{name}} by Id and returns error if
+// the record to be updated doesn't exist
+func Update{{name}}ById(m *{{name}}) (err error) {
+	o := orm.NewOrm()
+	v := {{name}}{
+	    {{primaryKey}}: m.{{primaryKey}},
+	}
+	// ascertain id exists in the database
+	if err = o.Read(&v); err == nil {
+		var num int64
+		if num, err = o.Update(m); err == nil {
+			fmt.Println("Number of records updated in database:", num)
+		}
+	}
+	return
+}
+
+// Delete{{name}} deletes {{name}} by Id and returns error if
+// the record to be deleted doesn't exist
+func Delete{{name}}(id int) (err error) {
+	o := orm.NewOrm()
+	v := {{name}}{
+   	    {{primaryKey}}: id,
+	}
+	// ascertain id exists in the database
+	if err = o.Read(&v); err == nil {
+		var num int64
+		if num, err = o.Delete(&{{name}}{
+		    {{primaryKey}}: id,
+		}); err == nil {
+			fmt.Println("Number of records deleted in database:", num)
+		}
+	}
+	return
+}

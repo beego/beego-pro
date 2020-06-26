@@ -1,0 +1,50 @@
+// @BeeOverwrite YES
+import React from 'react';
+import { CreateForm } from 'sula';
+import { Card } from 'antd';
+import FormConfig from "./formconfig"
+const apiUrl = "{{apiUrl}}";
+
+export default class Base extends React.Component {
+  state = {
+    remoteValues: null,
+  };
+
+  async componentDidMount() {
+    const { location: { query: { {{lowerFirstPrimaryKey}} } } } = this.props;
+    const remoteValues = {
+      url: apiUrl+"/"+{{lowerFirstPrimaryKey}},
+      method: "get",
+    }
+
+    const submit =  {
+      url: apiUrl+"/"+id,
+      method: "put",
+      convertParams: ( ctx ) => {
+        return {
+          ...ctx.params,
+          "{{lowerFirstPrimaryKey}}": parseInt({{lowerFirstPrimaryKey}})
+        }
+      },
+    };
+    this.setState({
+      remoteValues,
+      submit,
+    })
+  }
+
+  render() {
+    const { remoteValues,submit } = this.state
+
+    return (
+      <Card>
+        { remoteValues && <CreateForm
+          {...FormConfig.config}
+          remoteValues={ remoteValues }
+          submit = { submit }
+          mode = "edit"
+        /> }
+      </Card>
+    );
+  }
+}
