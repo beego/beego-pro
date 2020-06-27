@@ -1,4 +1,5 @@
 // @BeeOverwrite YES
+// @BeeGenerateTime {{generateTime}}
 import React, {Fragment} from 'react';
 import {Card, Row, Col, Statistic, message, Timeline, Tag, Button, Divider, Modal} from 'antd';
 import { QueryTable } from 'sula';
@@ -8,6 +9,7 @@ import request from "@/utils/request";
 const apiUrl = "{{apiUrl}}";
 const pageCreate = "{{pageCreate}}"
 const pageUpdate = "{{pageUpdate}}"
+const pageInfo = "{{pageInfo}}"
 
 const config = {
   "layout": "vertical",
@@ -36,16 +38,29 @@ export default class List extends React.Component  {
   render() {
     const columns = [
         {% for value in modelSchemas %}
+        {% if value.IsListShow && value.IsOrm %}
         {
           title: "{{value.Comment}}",
           key: "{{value.GoJsonTag}}",
         },
+        {% endif %}
         {% endfor %}
         {
             key:"operator",
             title: "操作",
             render: (ctx) => (
                 <Fragment>
+                  <a
+                      onClick={() => {
+                        history.push({
+                          pathname: pageInfo,
+                          search: `?{{lowerFirstPrimaryKey}}=${ctx.record.{{lowerFirstPrimaryKey}} }`,
+                        });
+                      }}
+                    >
+                      详情
+                    </a>
+                    <Divider type="vertical" />
                   <a
                     onClick={() => {
                       history.push({

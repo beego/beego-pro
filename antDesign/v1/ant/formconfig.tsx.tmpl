@@ -1,4 +1,5 @@
 // @BeeOverwrite YES
+// @BeeGenerateTime {{generateTime}}
 export default {
   config : {
     "container": {
@@ -23,16 +24,22 @@ export default {
   },
     "fields": [
     {% for value in modelSchemas %}
+    {% if value.IsOrm %}
     {
-      "name": "{{value.Name}}",
+      "name": "{{value.GoJsonTag}}",
       "label": "{{value.Comment}}",
       "field": {
-        "type": "input",
+        {% if value.Type == "text" %}
+             type: 'textarea',
+        {% else %}
+            "type": "input",
+        {% endif %}
         "props": {
             "placeholder": "请输入{{value.Comment}}"
         }
       }
     },
+    {% endif %}
     {% endfor %}
   ],
     "actionsPosition": "default",
