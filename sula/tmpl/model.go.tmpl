@@ -8,27 +8,27 @@ import (
 	"reflect"
 	"strings"
 	"github.com/astaxie/beego/orm"
-	{% for value in imports %}"{{value}}"
+	{% for value in packageImports %}"{{value}}"
     {% endfor %}
 )
 
-type {{name}} struct {
-     {% for value in modelSchemas %}{{value.CamelName}} {{value.GoType}} ` {% if value.OrmTag != "" %}orm:"{{value.OrmTag}}"{% endif %}json:"{{value.GoJsonTag}}" form:"{{value.GoJsonTag}}"` // {{value.Comment}}
+type {{modelName|upperFirst}} struct {
+     {% for value in modelSchemas %}{{value.Name|camelString}} {{value.GoType}} ` {% if value.OrmTag != "" %}orm:"{{value.OrmTag}}"{% endif %}json:"{{value.Name|camelString|lowerFirst}}" form:"{{value.Name|camelString|lowerFirst}}"` // {{value.Comment}}
      {% endfor %}
 }
 
 
-func (t *{{name}}) TableName() string {
-	return "{{tableName}}"
+func (t *{{modelName|upperFirst}}) TableName() string {
+	return "{{modelName|snakeString}}"
 }
 
 func init() {
-	orm.RegisterModel(new({{name}}))
+	orm.RegisterModel(new({{modelName|upperFirst}}))
 }
 
-// Add{{name}} insert a new {{name}} into database and returns
+// Add{{modelName|upperFirst}} insert a new {{modelName|upperFirst}} into database and returns
 // last inserted Id on success.
-func Add{{name}}(m *{{name}}) (id int64, err error) {
+func Add{{modelName|upperFirst}}(m *{{modelName|upperFirst}}) (id int64, err error) {
 	o := orm.NewOrm()
 	{% for value in modelSchemas %}
         {% if value.Name == "created_at" %}
@@ -42,12 +42,12 @@ func Add{{name}}(m *{{name}}) (id int64, err error) {
 	return
 }
 
-// Get{{name}}ById retrieves {{name}} by Id. Returns error if
+// Get{{modelName|upperFirst}}ById retrieves {{modelName|upperFirst}} by Id. Returns error if
 // Id doesn't exist
-func Get{{name}}ById(id int) (v *{{name}}, err error) {
+func Get{{modelName|upperFirst}}ById(id int) (v *{{modelName|upperFirst}}, err error) {
 	o := orm.NewOrm()
-	v = &{{name}}{
-	    {{primaryKey}}: id,
+	v = &{{modelName|upperFirst}}{
+	    {{modelPrimaryKey}}: id,
 	}
 	if err = o.Read(v); err == nil {
 		return v, nil
@@ -55,16 +55,16 @@ func Get{{name}}ById(id int) (v *{{name}}, err error) {
 	return nil, err
 }
 
-// GetAll{{name}} retrieves all {{name}} matches certain condition. Returns empty list if
+// GetAll{{modelName|upperFirst}}retrieves all {{modelName|upperFirst}} matches certain condition. Returns empty list if
 // no records exist
-func GetAll{{name}}(query map[string]string, fields []string, sortby []string, order []string,
+func GetAll{{modelName|upperFirst}}(query map[string]string, fields []string, sortby []string, order []string,
 	currentPage int, pageSize int) (ml ListData, err error) {
     page := NewPagination(currentPage, pageSize)
     ml = ListData{
         List:make([]interface{},0),
     }
 	o := orm.NewOrm()
-	qs := o.QueryTable(new({{name}}))
+	qs := o.QueryTable(new({{modelName|upperFirst}}))
 	// query k=v
 	for k, v := range query {
 		// rewrite dot-notation to Object__Attribute
@@ -118,7 +118,7 @@ func GetAll{{name}}(query map[string]string, fields []string, sortby []string, o
 		}
 	}
 
-	var l []{{name}}
+	var l []{{modelName|upperFirst}}
     qs = qs.OrderBy(sortFields...)
     _, err = qs.Limit(page.PageSize, (page.Current - 1) * page.PageSize).All(&l, fields...)
     if err != nil {
@@ -144,12 +144,12 @@ func GetAll{{name}}(query map[string]string, fields []string, sortby []string, o
 	return
 }
 
-// Update{{name}} updates {{name}} by Id and returns error if
+// Update{{modelName|upperFirst}} updates {{modelName|upperFirst}} by Id and returns error if
 // the record to be updated doesn't exist
-func Update{{name}}ById(m *{{name}}) (err error) {
+func Update{{modelName|upperFirst}}ById(m *{{modelName|upperFirst}}) (err error) {
 	o := orm.NewOrm()
-	v := {{name}}{
-	    {{primaryKey}}: m.{{primaryKey}},
+	v := {{modelName|upperFirst}}{
+	    {{modelPrimaryKey}}: m.{{modelPrimaryKey}},
 	}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
@@ -161,18 +161,18 @@ func Update{{name}}ById(m *{{name}}) (err error) {
 	return
 }
 
-// Delete{{name}} deletes {{name}} by Id and returns error if
+// Delete{{modelName|upperFirst}} deletes {{modelName|upperFirst}} by Id and returns error if
 // the record to be deleted doesn't exist
-func Delete{{name}}(id int) (err error) {
+func Delete{{modelName|upperFirst}}(id int) (err error) {
 	o := orm.NewOrm()
-	v := {{name}}{
-   	    {{primaryKey}}: id,
+	v := {{modelName|upperFirst}}{
+   	    {{modelPrimaryKey}}: id,
 	}
 	// ascertain id exists in the database
 	if err = o.Read(&v); err == nil {
 		var num int64
-		if num, err = o.Delete(&{{name}}{
-		    {{primaryKey}}: id,
+		if num, err = o.Delete(&{{modelName|upperFirst}}{
+		    {{modelPrimaryKey}}: id,
 		}); err == nil {
 			fmt.Println("Number of records deleted in database:", num)
 		}

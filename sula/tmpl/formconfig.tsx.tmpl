@@ -24,7 +24,7 @@ export default {
   },
     "fields": [
     {% for value in modelSchemas %}
-    {% if value.IsOrm %}
+    {% if value.Orm != "-" %}
     {
       "name": "{{value.GoJsonTag}}",
       "label": "{{value.Comment}}",

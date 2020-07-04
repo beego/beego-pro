@@ -3,7 +3,7 @@
 package {{packageName}}
 
 import (
-	"{{pkgPath}}/models"
+	"{{packagePath}}/models"
 	"encoding/json"
 	"errors"
 	"strconv"
@@ -12,13 +12,13 @@ import (
 	"github.com/astaxie/beego"
 )
 
-//  {{name}}Controller operations for {{name}}
-type {{name}}Controller struct {
+//  {{modelName|upperFirst}}Controller operations for {{modelName|upperFirst}}
+type {{modelName|upperFirst}}Controller struct {
 	beego.Controller
 }
 
 // URLMapping ...
-func (c *{{name}}Controller) URLMapping() {
+func (c *{{modelName|upperFirst}}Controller) URLMapping() {
 	c.Mapping("Post", c.Post)
 	c.Mapping("GetOne", c.GetOne)
 	c.Mapping("GetAll", c.GetAll)
@@ -28,16 +28,16 @@ func (c *{{name}}Controller) URLMapping() {
 
 // Post ...
 // @Title Post
-// @Description create {{name}}
-// @Param	body		body 	models.{{name}}	true		"body for {{name}} content"
-// @Success 201 {int} models.{{name}}
+// @Description create {{modelName|upperFirst}}
+// @Param	body		body 	models.{{modelName|upperFirst}}	true		"body for {{modelName|upperFirst}} content"
+// @Success 201 {int} models.{{modelName|upperFirst}}
 // @Failure 403 body is empty
 // @router / [post]
-func (c *{{name}}Controller) Post() {
-	var v models.{{name}}
+func (c *{{modelName|upperFirst}}Controller) Post() {
+	var v models.{{modelName|upperFirst}}
 	c.Ctx.Input.CopyBody(beego.BConfig.MaxMemory)
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	_, err := models.Add{{name}}(&v)
+	_, err := models.Add{{modelName|upperFirst}}(&v)
 	 if err != nil {
         c.Data["json"] = ResponseData{
             Code:    1,
@@ -57,15 +57,15 @@ func (c *{{name}}Controller) Post() {
 
 // GetOne ...
 // @Title Get One
-// @Description get {{name}} by id
+// @Description get {{modelName|upperFirst}} by id
 // @Param	id		path 	string	true		"The key for staticblock"
-// @Success 200 {object} models.{{name}}
+// @Success 200 {object} models.{{modelName|upperFirst}}
 // @Failure 403 :id is empty
 // @router /:id [get]
-func (c *{{name}}Controller) GetOne() {
+func (c *{{modelName|upperFirst}}Controller) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	v, err := models.Get{{name}}ById(id)
+	v, err := models.Get{{modelName|upperFirst}}ById(id)
 	if err != nil {
 		c.Data["json"] = ResponseData{
            Code:    1,
@@ -84,17 +84,17 @@ func (c *{{name}}Controller) GetOne() {
 
 // GetAll ...
 // @Title Get All
-// @Description get {{name}}
+// @Description get {{modelName|upperFirst}}
 // @Param	query	query	string	false	"Filter. e.g. col1:v1,col2:v2 ..."
 // @Param	fields	query	string	false	"Fields returned. e.g. col1,col2 ..."
 // @Param	sortby	query	string	false	"Sorted-by fields. e.g. col1,col2 ..."
 // @Param	order	query	string	false	"Order corresponding to each sortby field, if single value, apply to all sortby fields. e.g. desc,asc ..."
 // @Param	limit	query	string	false	"Limit the size of result set. Must be an integer"
 // @Param	offset	query	string	false	"Start position of result set. Must be an integer"
-// @Success 200 {object} models.{{name}}
+// @Success 200 {object} models.{{modelName|upperFirst}}
 // @Failure 403
 // @router / [get]
-func (c *{{name}}Controller) GetAll() {
+func (c *{{modelName|upperFirst}}Controller) GetAll() {
 	var fields []string
 	var sortby []string
 	var order []string
@@ -136,7 +136,7 @@ func (c *{{name}}Controller) GetAll() {
 		}
 	}
 
-	l, err := models.GetAll{{name}}(query, fields, sortby, order, current, pageSize)
+	l, err := models.GetAll{{modelName|upperFirst}}(query, fields, sortby, order, current, pageSize)
 	if err != nil {
 		c.Data["json"] = ResponseData{
 			Code:1,
@@ -154,22 +154,22 @@ func (c *{{name}}Controller) GetAll() {
 
 // Put ...
 // @Title Put
-// @Description update the {{name}}
+// @Description update the {{modelName|upperFirst}}
 // @Param	id		path 	string	true		"The id you want to update"
-// @Param	body		body 	models.{{name}}	true		"body for {{name}} content"
-// @Success 200 {object} models.{{name}}
+// @Param	body		body 	models.{{modelName|upperFirst}}	true		"body for {{modelName|upperFirst}} content"
+// @Success 200 {object} models.{{modelName|upperFirst}}
 // @Failure 403 :id is not int
 // @router /:id [put]
-func (c *{{name}}Controller) Put() {
+func (c *{{modelName|upperFirst}}Controller) Put() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	v := models.{{name}}{
-	    {{primaryKey}}: id,
+	v := models.{{modelName|upperFirst}}{
+	    {{modelPrimaryKey}}: id,
 	}
 
 	c.Ctx.Input.CopyBody(beego.BConfig.MaxMemory)
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	err := models.Update{{name}}ById(&v);
+	err := models.Update{{modelName|upperFirst}}ById(&v);
 	if err != nil {
 		c.Data["json"] = ResponseData{
             Code:1,
@@ -187,15 +187,15 @@ func (c *{{name}}Controller) Put() {
 
 // Delete ...
 // @Title Delete
-// @Description delete the {{name}}
+// @Description delete the {{modelName|upperFirst}}
 // @Param	id		path 	string	true		"The id you want to delete"
 // @Success 200 {string} delete success!
 // @Failure 403 id is empty
 // @router /:id [delete]
-func (c *{{name}}Controller) Delete() {
+func (c *{{modelName|upperFirst}}Controller) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	err := models.Delete{{name}}(id)
+	err := models.Delete{{modelName|upperFirst}}(id)
 	if err != nil {
 		c.Data["json"] = ResponseData{
             Code:1,

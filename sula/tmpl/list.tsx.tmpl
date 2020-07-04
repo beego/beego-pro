@@ -6,10 +6,10 @@ import { QueryTable } from 'sula';
 import { history } from 'umi';
 import request from "@/utils/request";
 
-const apiUrl = "{{apiUrl}}";
-const pageCreate = "{{pageCreate}}"
-const pageUpdate = "{{pageUpdate}}"
-const pageInfo = "{{pageInfo}}"
+const apiUrl = "{{apiPrefix}}/{{modelName}}";
+const pageCreate = "/{{modelName}}/create"
+const pageUpdate = "/{{modelName}}/update"
+const pageInfo = "/{{modelName}}/info"
 
 const config = {
   "layout": "vertical",
@@ -38,7 +38,7 @@ export default class List extends React.Component  {
   render() {
     const columns = [
         {% for value in modelSchemas %}
-        {% if value.IsListShow && value.IsOrm %}
+        {% if  value.IsOrm != "-" %}
         {
           title: "{{value.Comment}}",
           key: "{{value.GoJsonTag}}",
@@ -54,7 +54,7 @@ export default class List extends React.Component  {
                       onClick={() => {
                         history.push({
                           pathname: pageInfo,
-                          search: `?{{lowerFirstPrimaryKey}}=${ctx.record.{{lowerFirstPrimaryKey}} }`,
+                          search: `?{{modelPrimaryKey|lowerFirst}}=${ctx.record.{{modelPrimaryKey|lowerFirst}} }`,
                         });
                       }}
                     >
@@ -65,7 +65,7 @@ export default class List extends React.Component  {
                     onClick={() => {
                       history.push({
                         pathname: pageUpdate,
-                        search: `?{{lowerFirstPrimaryKey}}=${ctx.record.{{lowerFirstPrimaryKey}} }`,
+                        search: `?{{modelPrimaryKey|lowerFirst}}=${ctx.record.{{modelPrimaryKey|lowerFirst}} }`,
                       });
                     }}
                   >
@@ -79,7 +79,7 @@ export default class List extends React.Component  {
                         okText: '确认',
                         cancelText: '取消',
                         onOk: () => {
-                          request(apiUrl+"/"+ctx.record.{{lowerFirstPrimaryKey}}, {
+                          request(apiUrl+"/"+ctx.record.{{modelPrimaryKey|lowerFirst}}, {
                             method: 'DELETE',
                           }).then((res) => {
                             if (res.code !== 0) {

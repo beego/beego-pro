@@ -4,7 +4,7 @@ import React from 'react';
 import { CreateForm } from 'sula';
 import { Card } from 'antd';
 import FormConfig from "./formconfig"
-const apiUrl = "{{apiUrl}}";
+const apiUrl = "{{apiPrefix}}/{{modelName}}";
 
 export default class Base extends React.Component {
   state = {
@@ -12,14 +12,25 @@ export default class Base extends React.Component {
   };
 
   async componentDidMount() {
-    const { location: { query: { {{lowerFirstPrimaryKey}} } } } = this.props;
+    const { location: { query: { {{modelPrimaryKey|lowerFirst}} } } } = this.props;
     const remoteValues = {
-      url: apiUrl+"/"+{{lowerFirstPrimaryKey}},
+      url: apiUrl+"/"+{{modelPrimaryKey|lowerFirst}} ,
       method: "get",
     }
 
+    const submit =  {
+      url: apiUrl+"/"+id,
+      method: "put",
+      convertParams: ( ctx ) => {
+        return {
+          ...ctx.params,
+          "{{modelPrimaryKey|lowerFirst}}": parseInt({{modelPrimaryKey|lowerFirst}})
+        }
+      },
+    };
     this.setState({
       remoteValues,
+      submit,
     })
   }
 
@@ -31,7 +42,8 @@ export default class Base extends React.Component {
         { remoteValues && <CreateForm
           {...FormConfig.config}
           remoteValues={ remoteValues }
-          mode = "view"
+          submit = { submit }
+          mode = "edit"
         /> }
       </Card>
     );
