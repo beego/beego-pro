@@ -21,6 +21,10 @@ renderPath = "tmpl"
     srcName = "model.go.tmpl"
     dstPath = "{{pathBeego}}/models/{{modelName}}.go"
 [[descriptor]]
+    module = "routers"
+    srcName = "router.go.tmpl"
+    dstPath = "{{pathBeego}}/routers/{{modelName}}.go"
+[[descriptor]]
     module = "sulaList"
     srcName = "list.tsx.tmpl"
     dstPath = "{{pathSula}}/{{modelName}}/list.tsx"

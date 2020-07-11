@@ -2,6 +2,6 @@
 -- @BeeGenerateTime {{generateTime}}
 CREATE TABLE {{modelName|snakeString}}(
      {% for value in modelSchemas %}
-     `{{value.Name|snakeString}}` {{value.MysqlType}},{% endfor %}
+     {% if value.OrmTag != "-" %}`{{value.Name|snakeString}}` {{value.MysqlType}},{% endif %}{% endfor %}
      {% for value in modelSchemas %}{% if value.ColumnKey == "PRI" %}PRIMARY KEY (`{{value.Name|snakeString}}`){% endif %}{% endfor %}
 )
