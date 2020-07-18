@@ -13,7 +13,7 @@ const pageInfo = "/{{modelName}}/info"
 
 const config = {
   "layout": "vertical",
-  "rowKey": "aid",
+  "rowKey": "{{modelPrimaryKey|lowerFirst}}",
   "remoteDataSource": {
     "url": apiUrl,
     "method": "get"
@@ -41,7 +41,7 @@ export default class List extends React.Component  {
         {% if  value.IsOrm != "-" %}
         {
           title: "{{value.Comment}}",
-          key: "{{value.GoJsonTag}}",
+          key: "{{value.Name|camelString|lowerFirst}}",
         },
         {% endif %}
         {% endfor %}

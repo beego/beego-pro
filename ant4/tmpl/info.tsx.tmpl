@@ -1,0 +1,43 @@
+// @BeeOverwrite YES
+// @BeeGenerateTime {{generateTime}}
+import {Form, Input, Button, Select, Card, message} from 'antd';
+import {PageHeaderWrapper} from "@ant-design/pro-layout";
+import React from "react";
+import FormConfig from "./formconfig"
+import request from "@/utils/request";
+const apiUrl = "{{apiPrefix}}/{{modelName}}";
+
+export default class Base extends React.Component {
+  state = {
+    data: null,
+  };
+
+  async componentDidMount() {
+    const { location: { query: { {{modelPrimaryKey|lowerFirst}} } } } = this.props;
+    this.reqInfo({{modelPrimaryKey|lowerFirst}}).then(res => {
+      if (res.code !== 0) {
+        message.error(res.msg);
+        return false;
+      }
+      this.setState({
+        data: res.data,
+      });
+      return true;
+    });
+  }
+
+  reqInfo(id) {
+    return request(apiUrl+"/"+id);
+  }
+
+  render() {
+    const { data } = this.state;
+    return (
+      <PageHeaderWrapper>
+        <Card>
+          { data && <FormConfig  initialValues={data} mode="view" />}
+        </Card>
+      </PageHeaderWrapper>
+    );
+  }
+}

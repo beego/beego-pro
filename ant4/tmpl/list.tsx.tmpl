@@ -1,0 +1,118 @@
+// @BeeOverwrite YES
+// @BeeGenerateTime {{generateTime}}
+import { Card, message, Tag, Button, Divider, Modal } from 'antd';
+import { history } from 'umi';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import request from "@/utils/request";
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import React, { useState, useRef,Fragment } from 'react';
+
+const apiUrl = "{{apiPrefix}}/{{modelName}}";
+const pageCreate = "/{{modelName}}/create"
+const pageUpdate = "/{{modelName}}/update"
+const pageInfo = "/{{modelName}}/info"
+
+const reqList = (params) => {
+   return request(apiUrl, {
+        params,
+   });
+}
+
+
+const TableList: React.FC<{}> = () => {
+  const actionRef = useRef<ActionType>();
+
+
+    const columns = [
+        {% for value in modelSchemas %}
+        {% if  value.IsOrm != "-" %}
+        {
+            title: "{{value.Comment}}",
+            dataIndex: "{{value.Name|camelString|lowerFirst}}",
+            key: "{{value.Name|camelString|lowerFirst}}",
+        },
+        {% endif %}
+        {% endfor %}
+      {
+        title: '操作',
+        dataIndex: 'operating',
+        key: 'operating',
+        render: (value, record) => (
+          <Fragment>
+            <a
+               onClick={() => {
+                   history.push({
+                        pathname: pageInfo,
+                        search: `?{{modelPrimaryKey|lowerFirst}}=${record.{{modelPrimaryKey|lowerFirst}} }`,
+                      });
+                    }}
+                  >
+                    详情
+                  </a>
+            <Divider type="vertical" />
+            <a
+              onClick={() => {
+                history.push({
+                    pathname: pageUpdate,
+                    search: `?{{modelPrimaryKey|lowerFirst}}=${record.{{modelPrimaryKey|lowerFirst}} }`,
+                });
+              }}
+            >
+              编辑
+            </a>
+            <Divider type="vertical" />
+            <a
+              onClick={() => {
+                Modal.confirm({
+                  title: '确认删除？',
+                  okText: '确认',
+                  cancelText: '取消',
+                  onOk: () => {
+                    request(apiUrl+"/"+record.{{modelPrimaryKey|lowerFirst}}, {
+                       method: 'DELETE',
+                     }).then((res) => {
+                      if (res.code !== 0) {
+                        message.error(res.msg);
+                        return false;
+                      }
+                      actionRef.current?.reloadAndRest();
+                      return true;
+                    });
+                  },
+                });
+              }}
+            >
+              删除
+            </a>
+          </Fragment>
+        ),
+      },
+    ];
+    return (
+      <PageHeaderWrapper>
+        <Card>
+          <div>
+            <Button
+              type="primary"
+              onClick={() => {
+                history.push(pageCreate);
+              }}
+              style={ {
+                marginTop: 10,
+                marginBottom: 10,
+              } }
+            >
+              新增
+            </Button>
+          </div>
+          <ProTable
+            actionRef={actionRef}
+            request={(params, sorter, filter) => reqList({ ...params, sorter, filter })}
+            columns={columns}
+            rowKey={(record) => record.{{modelPrimaryKey|lowerFirst}}}
+          />
+        </Card>
+      </PageHeaderWrapper>
+    );
+}
+export default TableList;

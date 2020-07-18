@@ -14,7 +14,7 @@ export default class Base extends React.Component {
   async componentDidMount() {
     const { location: { query: { {{lowerFirstPrimaryKey}} } } } = this.props;
     const remoteValues = {
-      url: apiUrl+"/"+{{lowerFirstPrimaryKey}},
+      url: apiUrl+"/"+{{modelPrimaryKey|lowerFirst}} ,
       method: "get",
     }
 

@@ -26,7 +26,7 @@ export default {
     {% for value in modelSchemas %}
     {% if value.Orm != "-" %}
     {
-      "name": "{{value.GoJsonTag}}",
+      "name": "{{value.Name|camelString|lowerFirst}}",
       "label": "{{value.Comment}}",
       "field": {
         {% if value.Type == "text" %}
