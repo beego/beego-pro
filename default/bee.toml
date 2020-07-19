@@ -1,0 +1,25 @@
+renderPath = "tmpl"
+[default]
+   pathBeego = "."
+[[descriptor]]
+    module = "controllers"
+    srcName = "bee_default_controller.go.tmpl"
+    dstPath = "{{pathBeego}}/controllers/bee_default_controller.go"
+    once = true
+[[descriptor]]
+    module = "controllers"
+    srcName = "controller.go.tmpl"
+    dstPath = "{{pathBeego}}/controllers/{{modelName}}.go"
+[[descriptor]]
+    module = "models"
+    srcName = "bee_default_model.go.tmpl"
+    dstPath = "{{pathBeego}}/models/bee_default_model.go"
+    once = true
+[[descriptor]]
+    module = "models"
+    srcName = "model.go.tmpl"
+    dstPath = "{{pathBeego}}/models/{{modelName}}.go"
+[[descriptor]]
+    module = "routers"
+    srcName = "router.go.tmpl"
+    dstPath = "{{pathBeego}}/routers/{{modelName}}.go"

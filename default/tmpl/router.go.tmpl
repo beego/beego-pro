@@ -1,0 +1,16 @@
+// @BeeOverwrite YES
+// @BeeGenerateTime {{generateTime}}
+package routers
+
+import (
+	"{{packagePath}}/controllers"
+	"github.com/astaxie/beego"
+)
+
+func init() {
+	beego.Router("{{apiPrefix}}/{{modelName}}", &controllers.{{modelName|upperFirst}}Controller{}, "get:GetAll")
+	beego.Router("{{apiPrefix}}/{{modelName}}/:id", &controllers.{{modelName|upperFirst}}Controller{}, "get:GetOne")
+	beego.Router("{{apiPrefix}}/{{modelName}}", &controllers.{{modelName|upperFirst}}Controller{}, "post:Post")
+	beego.Router("{{apiPrefix}}/{{modelName}}/:id", &controllers.{{modelName|upperFirst}}Controller{}, "put:Put")
+	beego.Router("{{apiPrefix}}/{{modelName}}/:id", &controllers.{{modelName|upperFirst}}Controller{}, "delete:Delete")
+}
