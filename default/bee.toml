@@ -23,3 +23,12 @@ renderPath = "tmpl"
     module = "routers"
     srcName = "router.go.tmpl"
     dstPath = "{{pathBeego}}/routers/{{modelName}}.go"
+[[descriptor]]
+    module = "sqlUp"
+    srcName = "up.sql.tmpl"
+    dstPath = "{{pathBeego}}/sql/{{modelName}}_up.sql"
+    script = "bee pro migration --sql={{pathBeego}}/sql/{{modelName}}_up.sql"
+[[descriptor]]
+    module = "sqlDown"
+    srcName = "down.sql.tmpl"
+    dstPath = "{{pathBeego}}/sql/{{modelName}}_down.sql"
