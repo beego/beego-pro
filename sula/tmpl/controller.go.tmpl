@@ -169,7 +169,7 @@ func (c *{{modelName|upperFirst}}Controller) Put() {
 
 	c.Ctx.Input.CopyBody(beego.BConfig.MaxMemory)
 	json.Unmarshal(c.Ctx.Input.RequestBody, &v)
-	err := models.Update{{modelName|upperFirst}}ById(&v);
+	err := models.Update{{modelName|upperFirst}}ById(&v)
 	if err != nil {
 		c.Data["json"] = ResponseData{
             Code:1,
