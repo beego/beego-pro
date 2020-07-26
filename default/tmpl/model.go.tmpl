@@ -13,7 +13,7 @@ import (
 )
 
 type {{modelName|upperFirst}} struct {
-     {% for value in modelSchemas %}{{value.Name|camelString}} {{value.GoType}} ` {% if value.OrmTag != "" %}orm:"{{value.OrmTag}}"{% endif %}json:"{{value.Name|camelString|lowerFirst}}" form:"{{value.Name|camelString|lowerFirst}}"` // {{value.Comment}}
+     {% for value in modelSchemas %}{{value.Name|camelString}} {{value.GoType}} `{% if value.OrmTag != "" %} orm:"{{value.OrmTag}}"{% endif %} json:"{{value.Name|camelString|lowerFirst}}" form:"{{value.Name|camelString|lowerFirst}}"` // {{value.Comment}}
      {% endfor %}
 }
 
