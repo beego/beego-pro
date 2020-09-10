@@ -1,0 +1,16 @@
+# database info
+dsn = "db_user:db_pass@tcp(127.0.0.1:3306)/db_name"
+
+# if you want to auto FE code, you should add the proType and path.ant
+proType = "ant4"
+
+## field information of example table
+[models.example]
+    names = ["row1","row2","row3","row4"]
+    orms = ["int","string","text","datetime"]
+    comments = ["字段一","字段二","字段三","字段四"]
+
+# path info
+[path]
+    beego =  "."
+    ant  = "./ant/src/pages"
