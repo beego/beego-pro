@@ -1,4 +1,4 @@
-# you can see the detailed introduction from http://beego.top/bee/user.html#%E9%85%8D%E7%BD%AE%E4%BB%8B%E7%BB%8D
+# you can see the detailed introduction from http://beego.top/bee/user.html
 # database info
 dsn = "db_user:db_pass@tcp(127.0.0.1:3306)/db_name"
 
